@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bean:beans xmlns="http://www.springframework.org/schema/batch"
+            xmlns:bean="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:p="http://www.springframework.org/schema/p"
+            xmlns:tx="http://www.springframework.org/schema/tx"
+            xmlns:aop="http://www.springframework.org/schema/aop"
+            xmlns:context="http://www.springframework.org/schema/context"
+            xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-4.3.xsd
+http://www.springframework.org/schema/batch
+http://www.springframework.org/schema/batch/spring-batch-2.2.xsd">
+
+    <bean:import resource="applicationContext.xml"/>
+    <bean:bean id="productReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+        <!--输入文件-->
+        <bean:property name="resource" value="file:sample-data.csv"/>
+        <!--跳过的行-->
+        <bean:property name="linesToSkip" value="1"/>
+        <!--每行映射成一个对象-->
+        <bean:property name="lineMapper">
+            <bean:bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+               <!--分隔符-->
+                <bean:property name="lineTokenizer">
+                    <bean:bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+                        <bean:property name="names" value="id,name,description,quantity"/>
+                    </bean:bean>
+                </bean:property>
+            </bean:bean>
+        </bean:property>
+    </bean:bean>
+
+
+    <job id="helloWorldJob" job-repository="jobReposity">
+        <step id="step_hello" next="step_world">
+            <tasklet ref="hello" transaction-manager="transactionManager"></tasklet>
+        </step>
+        <step id="step_world">
+            <tasklet ref="world" transaction-manager="transactionManager"></tasklet>
+        </step>
+    </job>
+
+    <bean:bean id="hello" class="com.tuojin.bill.test.WriteTasklet">
+        <bean:property name="message" value="Hello "></bean:property>
+    </bean:bean>
+
+    <bean:bean id="world" class="com.tuojin.bill.test.WriteTasklet">
+        <bean:property name="message" value=" World!"></bean:property>
+    </bean:bean>
+</bean:beans>
