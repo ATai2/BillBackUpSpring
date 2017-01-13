@@ -154,9 +154,9 @@ public class DBHelper {
                 }else{
                     col.append("NOT NULL");
                 }
-                if (i != sqlServerStructures.size()-1) {
-                    col.append(", ");
-                }
+//                if (i != sqlServerStructures.size()-1) {
+//                    col.append(", ");
+//                }
 //                if (s.getP)  未添加主键
             }
 
@@ -165,8 +165,10 @@ public class DBHelper {
                     "inner join information_schema.constraint_column_usage b\n" +
                     "on a.constraint_name = b.constraint_name\n" +
                     "where a.constraint_type = 'PRIMARY KEY' and a.table_name = '" + tableName + "'");
-            while (primarykeys.next()) {
-
+            if (primarykeys != null) {
+                while (primarykeys.next()) {
+                    col.append("")
+                }
             }
 
 
