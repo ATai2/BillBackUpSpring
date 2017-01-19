@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bean:beans xmlns="http://www.springframework.org/schema/batch"
-            xmlns:bean="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:bean="http://www.springframework.org/schema/beans"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:p="http://www.springframework.org/schema/p"
             xmlns:tx="http://www.springframework.org/schema/tx"
             xmlns:aop="http://www.springframework.org/schema/aop"
@@ -17,6 +18,10 @@ http://www.springframework.org/schema/batch
 http://www.springframework.org/schema/batch/spring-batch-2.2.xsd">
 
     <bean:import resource="applicationContext.xml"/>
+
+
+
+
     <bean:bean id="productReader" class="org.springframework.batch.item.file.FlatFileItemReader">
         <!--输入文件-->
         <bean:property name="resource" value="file:sample-data.csv"/>
@@ -25,7 +30,7 @@ http://www.springframework.org/schema/batch/spring-batch-2.2.xsd">
         <!--每行映射成一个对象-->
         <bean:property name="lineMapper">
             <bean:bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
-               <!--分隔符-->
+                <!--分隔符-->
                 <bean:property name="lineTokenizer">
                     <bean:bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
                         <bean:property name="names" value="id,name,description,quantity"/>

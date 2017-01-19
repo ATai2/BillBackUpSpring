@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Class-Path: lib/c3p0-0.9.1.2.jar lib/log4j-1.2.14.jar lib/spring-batch
+ -core-2.2.6.RELEASE.jar lib/commons-lang3-3.5.jar lib/jettison-1.1.ja
+ r lib/spring-retry-1.0.2.RELEASE.jar lib/aspectjrt-1.6.8.jar lib/spri
+ ng-context-4.3.4.RELEASE.jar lib/xpp3_min-1.1.4c.jar lib/mysql-connec
+ tor-java-5.1.6.jar lib/cglib-nodep-2.2.jar lib/commons-dbcp-1.4.jar l
+ ib/spring-core-4.3.4.RELEASE.jar lib/spring-beans-4.3.4.RELEASE.jar l
+ ib/aspectjweaver-1.6.8.jar lib/commons-io-1.4.jar lib/sqljdbc4.jar li
+ b/spring-aop-4.3.4.RELEASE.jar lib/spring-batch-infrastructure-2.2.6.
+ RELEASE.jar lib/spring-jdbc-4.3.4.RELEASE.jar lib/commons-logging-1.2
+ .jar lib/xstream-1.3.jar lib/commons-pool-1.5.4.jar lib/spring-expres
+ sion-4.3.4.RELEASE.jar lib/spring-tx-4.3.4.RELEASE.jar
+Main-Class: com.tuojin.bill.Main
+

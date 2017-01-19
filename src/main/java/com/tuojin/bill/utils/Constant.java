@@ -4,6 +4,8 @@ package com.tuojin.bill.utils;
  * Created by Administrator on 2017/1/13.
  */
 public  class Constant {
+    public static final String HOS_ID ="新华医院" ;
+    public static  String TIFFDEST ="tiffdest" ;
     public static String TABLE_CATALOG="TABLE_CATALOG";
     public static String TABLE_SCHEMA="TABLE_SCHEMA";
     public static String TABLE_NAME="TABLE_NAME";
@@ -23,6 +25,10 @@ public  class Constant {
     public static String EXTRA="EXTRA";
     public static String PRIVILEGES="PRIVILEGES";
     public static String COLUMN_COMMENT="COLUMN_COMMENT";
+
+//    mysql column
+    public static String HOSPITAL_ID="hospitalid";
+    public static String BACK_DATE="backdate";
 
 //    mysql
     public static String Field="Field";

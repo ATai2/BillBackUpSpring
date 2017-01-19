@@ -25,11 +25,4 @@ public class WriteTasklet implements Tasklet {
         return RepeatStatus.FINISHED;
     }
 
-//    @Override
-//    public RepeatStatus execute(StepContribution arg0, ChunkContext arg1)
-//            throws Exception {
-//        System.out.println(message);
-//        return RepeatStatus.FINISHED;
-//    }
-
 }

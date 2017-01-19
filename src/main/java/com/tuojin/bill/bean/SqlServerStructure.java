@@ -87,6 +87,32 @@ public class SqlServerStructure {
         this.COLUMN_COMMENT = COLUMN_COMMENT;
     }
 
+    public SqlServerStructure(String TABLE_CATALOG,
+                              String TABLE_SCHEMA,
+                              String TABLE_NAME,
+                              String COLUMN_NAME,
+                              int ORDINAL_POSITION,
+                              String IS_NULLABLE,
+                              String DATA_TYPE,
+                              String CHARACTER_MAXIMUM_LENGTH,
+                              String CHARACTER_OCTET_LENGTH,
+                              String NUMERIC_PRECISION,
+                              String CHARACTER_SET_NAME,
+                              String COLLATION_NAME) {
+        this.TABLE_CATALOG = TABLE_CATALOG;
+        this.TABLE_SCHEMA = TABLE_SCHEMA;
+        this.TABLE_NAME = TABLE_NAME;
+        this.COLUMN_NAME = COLUMN_NAME;
+        this.ORDINAL_POSITION = ORDINAL_POSITION;
+        this.IS_NULLABLE = IS_NULLABLE;
+        this.DATA_TYPE = DATA_TYPE;
+        this.CHARACTER_MAXIMUM_LENGTH = CHARACTER_MAXIMUM_LENGTH;
+        this.CHARACTER_OCTET_LENGTH = CHARACTER_OCTET_LENGTH;
+        this.NUMERIC_PRECISION = NUMERIC_PRECISION;
+        this.CHARACTER_SET_NAME = CHARACTER_SET_NAME;
+        this.COLLATION_NAME = COLLATION_NAME;
+    }
+
     public String getTABLE_CATALOG() {
         return TABLE_CATALOG;
     }

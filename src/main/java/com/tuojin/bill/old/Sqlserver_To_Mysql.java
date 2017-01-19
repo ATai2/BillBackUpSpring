@@ -1,6 +1,7 @@
 package com.tuojin.bill.old;
 
 
+import com.tuojin.bill.utils.Constant;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
@@ -59,8 +60,8 @@ public class Sqlserver_To_Mysql {
     public Connection getMysqlConn() {
         // String
         // url="jdbc:mysql://192.168.1.110/innosystem_db?useUnicode=true&amp;characterEncoding=utf-8";
-        String url = "jdbc:mysql://localhost:3306/ssm?useUnicode=true&amp;characterEncoding=utf-8";
-//        String url = "jdbc:mysql://192.168.1.243:3306/Enuo63305330?useUnicode=true&amp;characterEncoding=utf-8";
+//        String url = "jdbc:mysql://localhost:3306/ssm?useUnicode=true&amp;characterEncoding=utf-8";
+        String url = "jdbc:mysql://192.168.1.243:3306/Enuo63305330?useUnicode=true&amp;characterEncoding=utf-8";
         String user = "root";
         String password = "root";
         try {
@@ -153,40 +154,6 @@ public class Sqlserver_To_Mysql {
 
         ResultSet rs2 = meta.getTables(null, null, null, new String[]{"TABLE"}); // 依次取得数据库中的 表名
         while (rs2.next()) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             String tableName = rs2.getString(3);
             System.out.println("表名：" + rs2.getString(3)); // 表名
             System.out.println("------------------------------");
@@ -432,9 +399,11 @@ public class Sqlserver_To_Mysql {
 
                 // String[] array=new String[coulum]; //用以存储rs中的不同类型的字段值
                 for (int i = 0; i < coulum; i++) {
-                    String columName = rsmd.getColumnName(i + 1); // 获取指定列的名称。
+                    String columName = rsmd.getColumnName(i + 1); // 获取指定列的名称。sql中从1开始
                     if (i == (coulum - 1)) {
+
                         mysql1 = mysql1 + columName + ")";
+
                     } else {
                         mysql1 = mysql1 + columName + ",";
                     }
