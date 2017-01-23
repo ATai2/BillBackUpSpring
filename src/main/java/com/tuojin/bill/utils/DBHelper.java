@@ -54,8 +54,8 @@ public class DBHelper implements IOperator {
         prop = new Properties();
         try {
             logger.info("读取配置文件");
-            InputStream in = new BufferedInputStream(new FileInputStream("E:\\project\\IDEA\\BillBackUpSpring\\src\\main\\resources\\init.properties"));
-//            InputStream in = new BufferedInputStream(new FileInputStream("init.properties"));
+            //InputStream in = new BufferedInputStream(new FileInputStream("E:\\project\\IDEA\\BillBackUpSpring\\src\\main\\resources\\init.properties"));
+            InputStream in = new BufferedInputStream(new FileInputStream("init.properties"));
             prop.load(in);
             Iterator<String> it = prop.stringPropertyNames().iterator();
             sqlserver_url = prop.getProperty("sqlserver_url");
@@ -89,7 +89,7 @@ public class DBHelper implements IOperator {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             conn = DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             System.out.println("weilianjianshang conn");
             logger.error("无法连接sqlserver数据库，请检查配置文件！");
         }
@@ -116,7 +116,7 @@ public class DBHelper implements IOperator {
 //            mysqlConn = DriverManager.getConnection(url, prop);
             mysqlConn = DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             logger.error("mysql数据连接错误，请检查配置");
         }
         return mysqlConn;
@@ -488,7 +488,7 @@ public class DBHelper implements IOperator {
                 bean.setsUoucherNo(resultSet.getString("sVoucherNo"));
                 bean.setsFilePahtName(resultSet.getString("sFilePathName"));
                 //目标文件路径+日期+文件名
-                String dest = targetDir + "/" + DateFormatUtils.format(new Date(), "yyyy-MM-DD") + resultSet.getString("sFilePathName").substring(2);
+                String dest = targetDir + "\\" + DateFormatUtils.format(new Date(), "yyyy-MM-DD") + resultSet.getString("sFilePathName").substring(2);
                 bean.setDestination(dest);
                 list.add(bean);
             }
@@ -503,6 +503,7 @@ public class DBHelper implements IOperator {
      *
      * @param list
      */
+
     private void copyTiffFiles(List<TiffBean> list) {
 //        复制文件
         for (int i = 0; i < list.size(); i++) {
@@ -515,16 +516,10 @@ public class DBHelper implements IOperator {
                     throw new FileNotFoundException("目标文件未能找到！");
 //                    continue;
                 }
-
                 if (destFile.exists()) {
                     FileUtils.deleteQuietly(destFile);
                 }
                 FileUtils.moveFile(srcFile, destFile);
-//                if (!destFile.exists()) {
-//                    destFile.createNewFile();
-//                }
-//
-//                FileUtils.copyFile(srcFile, destFile);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 logger.error("主键为：" + tiffBean.getsVoucherKey() + "、" + tiffBean.getsUoucherNo() + "的tiff文件未能找到！");
@@ -588,13 +583,9 @@ public class DBHelper implements IOperator {
         ResultSet rs2 = meta.getTables(null, null, null, new String[]{"TABLE"}); // 依次取得数据库中的 表名
 //        遍历每一张表
         while (rs2.next()) {
-
             String tableName = rs2.getString(3);
             if (tableName.equals("sysdiagrams")) continue;
-
             createTableByName(tableName);
-
-
             System.out.println("表名：" + rs2.getString(3)); // 表名
             System.out.println("------------------------------");
 //            大数据量的情况下的数据
@@ -602,7 +593,6 @@ public class DBHelper implements IOperator {
             ResultSet rs;
             try {
                 copyColumnMy(tableName, sql);
-
             } catch (SQLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -704,12 +694,12 @@ public class DBHelper implements IOperator {
             }
 
             if (flag > 0) {//受影响行数》0 表明插入成功。则删除旧表数据
-                logger.info(mysql + "执行复制成功");
+                //logger.info(mysql + "执行复制成功");
                 int i = this.getStatement().executeUpdate(delstr);
                 if (i > 0) {
-                    logger.info(delstr + "执行删除成功");
+                    //logger.info(delstr + "执行删除成功");
                 } else {
-                    logger.info(delstr + "执行删除成功");
+                    //logger.info(delstr + "执行删除成功");
                 }
             } else {
                 logger.error(mysql + "执行复制失败！");
@@ -724,18 +714,19 @@ public class DBHelper implements IOperator {
             File srcFile = new File(src);
             File destFile = new File(des);
             if (!srcFile.exists()) {
-                logger.error("目标为：" + src + "的文件未能找到！");
-                throw new FileNotFoundException("目标文件未能找到！");
+                 logger.error("目标为：" + src + "的文件未能找到！");
+            }else{
+                if (destFile.exists()) {
+                    FileUtils.deleteQuietly(destFile);
+                }
+                FileUtils.moveFile(srcFile, destFile);
             }
-            if (destFile.exists()) {
-                FileUtils.deleteQuietly(destFile);
-            }
-            FileUtils.moveFile(srcFile, destFile);
+
         } catch (FileNotFoundException e) {
 //            e.printStackTrace();
             return false;
         } catch (IOException e) {
-            logger.error("目标为：" + src + "的文件迁移出错！");
+            logger.error("目标为：" + src + "的文件读取出错！");
             return false;
         } catch (Exception e) {
             // e.printStackTrace();
@@ -939,6 +930,7 @@ public class DBHelper implements IOperator {
     }
 
     //0
+    @Deprecated
     private String getPKName(String tableName) {
         try {
             DatabaseMetaData dbMeta = this.getMysqlConn().getMetaData();
@@ -950,539 +942,6 @@ public class DBHelper implements IOperator {
             e.printStackTrace();
         }
         return "";
-//        String idName = "";
-//        ResultSetMetaData metaData = null;
-//        try {
-//            metaData = rs.getMetaData();
-//            idName = metaData.getColumnName(1);
-//            System.out.println(idName);
-//        } catch (Exception e) {
-//            logger.error("查询表的主键名出错！ ",e);
-//        }
-//        return idName;
-    }
-
-    // 单个的执行mysql 表插入数据的操作
-    private void getTableData(String tableName) throws SQLException {
-        String sql = "select * from " + tableName;
-        ResultSet rs;
-        try {
-            System.out.println("表名1:" + tableName);
-            rs = this.getStatement().executeQuery(sql); // 执行sql server中的语句，得到ResultSet值
-            // ResultSetMetaData可用于获取关于 ResultSet 对象中列的类型和属性信息的对象
-            // 使用元数据获取一个表字段的总数
-            System.out.println("表名2:" + tableName);
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int coulum = rsmd.getColumnCount(); // 统计在rs中有多少列
-            // 在mysql已有的数据库表中插入数据
-            int count = 1;
-            while (rs.next()) {
-                columCopy(tableName, rs, rsmd, coulum, count);
-            }
-            rs.close();
-
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        this.close();
-    }
-
-    private void columCopy(String tableName, ResultSet rs, ResultSetMetaData rsmd, int coulum, int count) throws SQLException {
-        String mysql = "insert into " + tableName + "";
-        String mysql1 = "(";// 用以处理字段名
-        String mysql2 = "values(";// 用以处理字段的值
-
-        // String[] array=new String[coulum]; //用以存储rs中的不同类型的字段值
-        for (int i = 0; i < coulum; i++) {
-            String columName = rsmd.getColumnName(i + 1); // 获取指定列的名称。
-            if (i == (coulum - 1)) {
-                mysql1 = mysql1 + columName + ")";
-            } else {
-                mysql1 = mysql1 + columName + ",";
-            }
-            // 分情况Date，int，float，double，varchar的不同类型的字段
-            int columType = rsmd.getColumnType(i + 1); // 获取指定列的 SQL 类型。
-            if (columType == Types.INTEGER) {
-                // 一下三行都是检验其是否为null的
-                int v = rs.getInt(i + 1);
-                rs.wasNull();
-                System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + (rs.wasNull() ? null : v) + "  ");
-                if (count == 1) {
-                    if (i == 0) {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "" + rs.getInt(i + 1) + ",";
-                    } else if (i == (coulum - 1)) {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ");";
-                        else
-                            mysql2 = mysql2 + "" + rs.getInt(i + 1) + ");";
-                    } else {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "" + rs.getInt(i + 1) + ",";
-                    }
-
-                }
-
-            } else if (columType == Types.BIGINT) {
-                rs.getInt(i + 1);
-                rs.wasNull();
-                if (count == 1) {
-                    if (i == 0) {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "" + rs.getInt(i + 1) + ",";
-                    } else if (i == (coulum - 1)) {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ");";
-                        else
-                            mysql2 = mysql2 + "" + rs.getInt(i + 1) + ");";
-                    } else {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "" + rs.getInt(i + 1) + ",";
-                    }
-                }
-                System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getInt(i + 1) + "  ");
-
-            } else if (columType == Types.DOUBLE) {
-                rs.getDouble(i + 1);
-                rs.wasNull();
-                if (count == 1) {
-                    if (i == 0) {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "" + rs.getDouble(i + 1) + ",";
-                    } else if (i == (coulum - 1)) {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ");";
-                        else
-                            mysql2 = mysql2 + "" + rs.getDouble(i + 1) + ");";
-                    } else {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "" + rs.getDouble(i + 1) + ",";
-                    }
-                }
-                System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getDouble(i + 1) + "  ");
-
-            } else if (columType == Types.FLOAT) {
-                rs.getFloat(i + 1);
-                rs.wasNull();
-                if (count == 1) {
-                    if (i == 0) {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "" + rs.getFloat(i + 1) + ",";
-                    } else if (i == (coulum - 1)) {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ");";
-                        else
-                            mysql2 = mysql2 + "" + rs.getFloat(i + 1) + ");";
-                    } else {
-                        if (rs.wasNull())
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "" + rs.getFloat(i + 1) + ",";
-                    }
-                }
-                System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getFloat(i + 1) + "  ");
-
-            } else if (columType == Types.DATE) {
-                rs.getDate(i + 1);
-                if (count == 1) {
-                    if (i == 0) {
-                        if (rs.getDate(i + 1) == null)
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getDate(i + 1) + "',";
-                    } else if (i == (coulum - 1)) {
-                        if (rs.getDate(i + 1) == null)
-                            mysql2 = mysql2 + null + ");";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getDate(i + 1) + "');";
-                    } else {
-                        if (rs.getDate(i + 1) == null)
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getDate(i + 1) + "',";
-                    }
-                }
-                System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getString(i + 1) + "  ");
-
-            } else if (columType == Types.BOOLEAN) {
-                rs.getBoolean(i + 1);
-                if (count == 1) {
-                    if (i == 0) {
-                        mysql2 = mysql2 + "'" + rs.getBoolean(i + 1) + "',";
-                    } else if (i == (coulum - 1)) {
-                        mysql2 = mysql2 + "'" + rs.getBoolean(i + 1) + "');";
-                    } else {
-                        mysql2 = mysql2 + "'" + rs.getBoolean(i + 1) + "',";
-                    }
-                }
-                System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getBoolean(i + 1) + "  ");
-
-            } else if (columType == Types.LONGVARCHAR) {
-                rs.getString(i + 1);
-                if (count == 1) {
-                    if (i == 0) {
-                        if (rs.getString(i + 1) == null)
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getString(i + 1) + "',";
-                    } else if (i == (coulum - 1)) {
-                        if (rs.getString(i + 1) == null)
-                            mysql2 = mysql2 + null + ");";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getString(i + 1) + "');";
-                    } else {
-                        if (rs.getString(i + 1) == null)
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getString(i + 1) + "',";
-                    }
-                }
-                System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getBoolean(i + 1) + "  ");
-
-            } else if (columType == Types.CHAR) {
-                rs.getString(i + 1);
-                if (count == 1) {
-                    if (i == 0) {
-                        if (rs.getString(i + 1) == null)
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getString(i + 1) + "',";
-                    } else if (i == (coulum - 1)) {
-                        if (rs.getString(i + 1) == null)
-                            mysql2 = mysql2 + null + ");";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getString(i + 1) + "');";
-                    } else {
-                        if (rs.getString(i + 1) == null)
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getString(i + 1) + "',";
-                    }
-                }
-                System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getBoolean(i + 1) + "  ");
-            } else {
-                rs.getString(i + 1);
-                if (count == 1) {
-                    if (i == 0) {
-                        if (rs.getString(i + 1) == null)
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getString(i + 1) + "',";
-                    } else if (i == (coulum - 1)) {
-                        if (rs.getString(i + 1) == null)
-                            mysql2 = mysql2 + null + ");";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getString(i + 1) + "');";
-                    } else {
-                        if (rs.getString(i + 1) == null)
-                            mysql2 = mysql2 + null + ",";
-                        else
-                            mysql2 = mysql2 + "'" + rs.getString(i + 1) + "',";
-                    }
-                }
-                System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getString(i + 1) + "  ");
-
-            }
-            System.out.println();
-
-        }
-        mysql = mysql + mysql1 + mysql2;
-        System.out.println("建立表的语句:" + mysql);
-        this.getmysqlStatement().executeUpdate(mysql);
-    }
-
-    /**
-     * 处理特殊字符：如果多行文本域中有单引号这些特殊符号怎么用代码进行处理
-     */
-    private void testTableData(String tableName) throws SQLException {
-        String sql = "select * from " + tableName;
-
-        ResultSet rs;
-        try {
-            rs = this.getStatement().executeQuery(sql); // 执行sql server中的语句，得到ResultSet值
-            ResultSet rss = this.getStatement().executeQuery(sql);
-
-            // ResultSetMetaData可用于获取关于 ResultSet 对象中列的类型和属性信息的对象
-            // 使用元数据获取一个表字段的总数
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int coulum = rsmd.getColumnCount(); // 统计在rs中有多少列
-
-            String valuesquest = "insert into " + tableName + "(";
-            while (rss.next()) {
-                for (int j = 0; j < coulum; j++) {
-                    String columName = rsmd.getColumnName(j + 1); // 获取指定列的名称。
-                    if (j == (coulum - 1))
-                        valuesquest = valuesquest + columName + ")";
-                    else
-                        valuesquest = valuesquest + columName + ",";
-                }
-                break;
-            }
-            valuesquest = valuesquest + "values(";
-            System.out.println("列的数目是:" + coulum);
-            // 在mysql已有的数据库表中插入数据
-
-            for (int k = 0; k < coulum; k++) {
-                if (k == coulum - 1)
-                    valuesquest = valuesquest + "?);";
-                else
-                    valuesquest = valuesquest + "?,";
-            }
-            System.out.println("values(是:" + valuesquest);
-            int count = 1;
-            while (rs.next()) {
-                PreparedStatement prep;
-
-                prep = this.getMysqlConn().prepareStatement(valuesquest);
-                // //这样无论有什么特殊字符都自动搞掂，无需转换
-                // prep.setString(1, request.getParameter( "text "));
-                // prep.executeUpdate();
-                // String mysql="insert into "+tableName+"";
-                // String mysql1 = "(";//用以处理字段名
-                // String mysql2 = "values(";//用以处理字段的值
-                // [] array=new String[coulum]; //用以存储rs中的不同类型的字段值
-                for (int i = 0; i < coulum; i++) {
-                    String columName = rsmd.getColumnName(i + 1); // 获取指定列的名称。
-
-                    // 分情况Date，int，float，double，varchar的不同类型的字段
-                    int columType = rsmd.getColumnType(i + 1); // 获取指定列的 SQL 类型。
-                    if (columType == java.sql.Types.INTEGER) {
-                        // 一下三行都是检验其是否为null的
-                        int v = rs.getInt(i + 1);
-                        rs.wasNull();
-                        System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + (rs.wasNull() ? null : v) + "  ");
-                        if (count == 1) {
-                            if (i == 0) {
-                                if (rs.wasNull())
-                                    prep.setInt((i + 1), 0);
-                                else
-                                    prep.setInt((i + 1), rs.getInt(i + 1));
-
-                            } else if (i == (coulum - 1)) {
-                                if (rs.wasNull())
-                                    prep.setInt((i + 1), 0);
-                                else
-                                    prep.setInt((i + 1), rs.getInt(i + 1));
-                            } else {
-                                if (rs.wasNull())
-                                    prep.setInt((i + 1), 0);
-                                else
-                                    prep.setInt((i + 1), rs.getInt(i + 1));
-                            }
-
-                        }
-                        // hashMap.put(columName, rs.getInt(i+1)); //获取指定列的数据值
-                    } else if (columType == java.sql.Types.BIGINT) {
-                        rs.getInt(i + 1);
-                        rs.wasNull();
-                        if (count == 1) {
-                            if (i == 0) {
-                                if (rs.wasNull())
-                                    prep.setInt((i + 1), (Integer) null);
-                                else
-                                    prep.setInt((i + 1), rs.getInt(i + 1));
-                            } else if (i == (coulum - 1)) {
-                                if (rs.wasNull())
-                                    prep.setInt((i + 1), (Integer) null);
-                                else
-                                    prep.setInt((i + 1), rs.getInt(i + 1));
-                            } else {
-                                if (rs.wasNull())
-                                    prep.setInt((i + 1), (Integer) null);
-                                else
-                                    prep.setInt((i + 1), rs.getInt(i + 1));
-                            }
-                        }
-                        System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getInt(i + 1) + "  ");
-
-                        // hashMap.put(columName, rs.getInt(i+1));
-                    } else if (columType == java.sql.Types.DOUBLE) {
-                        rs.getDouble(i + 1);
-                        rs.wasNull();
-                        if (count == 1) {
-                            if (i == 0) {
-                                if (rs.wasNull())
-                                    prep.setDouble((i + 1), (Double) null);
-                                else
-                                    prep.setDouble((i + 1), rs.getDouble(i + 1));
-                            } else if (i == (coulum - 1)) {
-                                if (rs.wasNull())
-                                    prep.setDouble((i + 1), (Double) null);
-                                else
-                                    prep.setDouble((i + 1), rs.getDouble(i + 1));
-                            } else {
-                                if (rs.wasNull())
-                                    prep.setDouble((i + 1), (Double) null);
-                                else
-                                    prep.setDouble((i + 1), rs.getDouble(i + 1));
-                            }
-                        }
-                        System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getDouble(i + 1) + "  ");
-
-                        // hashMap.put(columName, rs.getDouble(i+1));
-                    } else if (columType == java.sql.Types.FLOAT) {
-                        rs.getFloat(i + 1);
-                        rs.wasNull();
-                        if (count == 1) {
-                            if (i == 0) {
-                                if (rs.wasNull())
-                                    prep.setFloat((i + 1), (Float) null);
-                                else
-                                    prep.setFloat((i + 1), rs.getFloat(i + 1));
-                            } else if (i == (coulum - 1)) {
-                                if (rs.wasNull())
-                                    prep.setFloat((i + 1), (Float) null);
-                                else
-                                    prep.setFloat((i + 1), rs.getFloat(i + 1));
-                            } else {
-                                if (rs.wasNull())
-                                    prep.setFloat((i + 1), (Float) null);
-                                else
-                                    prep.setFloat((i + 1), rs.getFloat(i + 1));
-                            }
-                        }
-                        System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getFloat(i + 1) + "  ");
-
-                        // hashMap.put(columName, rs.getFloat(i+1));
-                    } else if (columType == java.sql.Types.DATE) {
-                        rs.getDate(i + 1);
-                        if (count == 1) {
-                            if (i == 0) {
-                                if (rs.getDate(i + 1) == null)
-                                    prep.setDate((i + 1), null);
-                                else
-                                    prep.setDate((i + 1), rs.getDate(i + 1));
-                            } else if (i == (coulum - 1)) {
-                                if (rs.getDate(i + 1) == null)
-                                    prep.setDate((i + 1), null);
-                                else
-                                    prep.setDate((i + 1), rs.getDate(i + 1));
-                            } else {
-                                if (rs.getDate(i + 1) == null)
-                                    prep.setDate((i + 1), null);
-                                else
-                                    prep.setDate((i + 1), rs.getDate(i + 1));
-                            }
-                        }
-                        System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getString(i + 1) + "  ");
-
-                        // hashMap.put(columName, rs.getString(i+1));
-                    } else if (columType == java.sql.Types.BOOLEAN) {
-                        rs.getBoolean(i + 1);
-                        if (count == 1) {
-                            if (i == 0) {
-                                prep.setBoolean((i + 1), rs.getBoolean(i + 1));
-                                // mysql2 = mysql2 +"'"+ rs.getBoolean(i+1) +"',";
-                            } else if (i == (coulum - 1)) {
-                                prep.setBoolean((i + 1), rs.getBoolean(i + 1));
-                            } else {
-                                prep.setBoolean((i + 1), rs.getBoolean(i + 1));
-                            }
-                        }
-                        System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getBoolean(i + 1) + "  ");
-
-                        // hashMap.put(columName, rs.getBoolean(i+1));
-                    } else if (columType == java.sql.Types.LONGVARCHAR) {
-                        rs.getString(i + 1);
-                        if (count == 1) {
-                            if (i == 0) {
-                                if (rs.getString(i + 1) == null)
-                                    prep.setString((i + 1), null);
-                                else
-                                    prep.setString((i + 1), rs.getString(i + 1));
-                            } else if (i == (coulum - 1)) {
-                                if (rs.getString(i + 1) == null)
-                                    prep.setString((i + 1), null);
-                                else
-                                    prep.setString((i + 1), rs.getString(i + 1));
-                            } else {
-                                if (rs.getString(i + 1) == null)
-                                    prep.setString((i + 1), null);
-                                else
-                                    prep.setString((i + 1), rs.getString(i + 1));
-                            }
-                        }
-                        System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getBoolean(i + 1) + "  ");
-
-                        // hashMap.put(columName, rs.getBoolean(i+1));
-                    } else if (columType == java.sql.Types.CHAR) {
-                        rs.getString(i + 1);
-                        if (count == 1) {
-                            if (i == 0) {
-                                if (rs.getString(i + 1) == null)
-                                    prep.setString((i + 1), null);
-                                else
-                                    prep.setString((i + 1), rs.getString(i + 1));
-                            } else if (i == (coulum - 1)) {
-                                if (rs.getString(i + 1) == null)
-                                    prep.setString((i + 1), null);
-                                else
-                                    prep.setString((i + 1), rs.getString(i + 1));
-                            } else {
-                                if (rs.getString(i + 1) == null)
-                                    prep.setString((i + 1), null);
-                                else
-                                    prep.setString((i + 1), rs.getString(i + 1));
-                            }
-                        }
-                        System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getBoolean(i + 1) + "  ");
-                    } else {
-                        rs.getString(i + 1);
-                        if (count == 1) {
-                            if (i == 0) {
-                                if (rs.getString(i + 1) == null)
-                                    prep.setString((i + 1), null);
-                                else
-                                    prep.setString((i + 1), rs.getString(i + 1));
-                            } else if (i == (coulum - 1)) {
-                                if (rs.getString(i + 1) == null)
-                                    prep.setString((i + 1), null);
-                                else
-                                    prep.setString((i + 1), rs.getString(i + 1));
-                            } else {
-                                if (rs.getString(i + 1) == null)
-                                    prep.setString((i + 1), null);
-                                else
-                                    prep.setString((i + 1), rs.getString(i + 1));
-                            }
-                        }
-                        System.out.print("列" + (i + 1) + "名:" + columName + " , 字段值为:" + rs.getString(i + 1) + "  ");
-
-                        // hashMap.put(columName, rs.getString(i+1));
-                    }
-                    System.out.println();
-                }
-                prep.executeUpdate();
-                prep.close();
-                // mysql = mysql + mysql1 + mysql2;
-                // System.out.println("建立表的语句:"+mysql);
-                // this.getmysqlStatement().executeUpdate(mysql);
-
-            }
-            rs.close();
-
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        this.close();
     }
 
     @Override
@@ -1537,7 +996,6 @@ public class DBHelper implements IOperator {
                 mTables) {
             copyTableData(s);
         }
-//        mTables.forEach(s -> copyTableData(s));
         logger.info("数据迁移结束");
         return false;
     }

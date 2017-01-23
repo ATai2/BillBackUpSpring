@@ -1,8 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-<!--batch启动-->
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:annotation-config/>
+
+    <context:component-scan base-package="com.tuojin.bill"/>
+
+    <bean id="springDemo" class="com.tuojin.bill.SpringDemo">
+    </bean>
+    <bean id="sdbHelper" class="com.tuojin.bill.utils.SDBHelper">
+
+    </bean>
+
+
+    <!--配置文件-->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="classpath*:init.properties"/>
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--sqlserver配置-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close" >
+        <property name="driverClass" value="${sqlserver_driver}"/>
+        <property name="jdbcUrl" value="${sqlserver_url}"/>
+        <property name="user" value="${sqlserver_user}"/>
+        <property name="password" value="${sqlserver_password}"/>
+        <property name="initialPoolSize" value="${c3p0.initialPoolSize}"/>
+        <property name="minPoolSize" value="${c3p0.minPoolSize}"/>
+        <property name="maxPoolSize" value="${c3p0.maxPoolSize}"/>
+    </bean>
+
+    <bean id="jdbcTemplateMy" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSourceMy"/>
+    </bean>
+    <!--mysql配置-->
+    <bean id="dataSourceMy" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${mysql_driver}"/>
+        <property name="jdbcUrl" value="${mysql_url}"/>
+        <property name="user" value="${mysql_user}"/>
+        <property name="password" value="${mysql_password}"/>
+
+        <property name="initialPoolSize" value="${c3p0.initialPoolSize}"/>
+        <property name="minPoolSize" value="${c3p0.minPoolSize}"/>
+        <property name="maxPoolSize" value="${c3p0.maxPoolSize}"/>
+    </bean>
+
+    <tx:annotation-driven/>
+    <bean id="trans1" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+        <qualifier value="sqlserver"/>
+
+    </bean>
+    <bean id="trans2" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <qualifier value="mysql"/>
+        <property name="dataSource" ref="dataSourceMy"/>
+    </bean>
+
+
+    <!--batch启动-->
     <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
         <property name="jobRepository" ref="jobReposity"></property>
     </bean>

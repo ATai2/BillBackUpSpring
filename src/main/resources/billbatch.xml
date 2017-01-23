@@ -19,28 +19,6 @@ http://www.springframework.org/schema/batch/spring-batch-2.2.xsd">
 
     <bean:import resource="applicationContext.xml"/>
 
-
-
-
-    <!--<bean:bean id="productReader" class="org.springframework.batch.item.file.FlatFileItemReader">-->
-        <!--&lt;!&ndash;输入文件&ndash;&gt;-->
-        <!--<bean:property name="resource" value="file:sample-data.csv"/>-->
-        <!--&lt;!&ndash;跳过的行&ndash;&gt;-->
-        <!--<bean:property name="linesToSkip" value="1"/>-->
-        <!--&lt;!&ndash;每行映射成一个对象&ndash;&gt;-->
-        <!--<bean:property name="lineMapper">-->
-            <!--<bean:bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">-->
-                <!--&lt;!&ndash;分隔符&ndash;&gt;-->
-                <!--<bean:property name="lineTokenizer">-->
-                    <!--<bean:bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">-->
-                        <!--<bean:property name="names" value="id,name,description,quantity"/>-->
-                    <!--</bean:bean>-->
-                <!--</bean:property>-->
-            <!--</bean:bean>-->
-        <!--</bean:property>-->
-    <!--</bean:bean>-->
-
-
     <job id="helloWorldJob" job-repository="jobReposity">
         <step id="step_hello" next="step_world">
             <tasklet ref="hello" transaction-manager="transactionManager"></tasklet>
